@@ -6,6 +6,12 @@ const ctx = canvas.getContext('2d');
 const width = canvas.width = window.innerWidth;
 const height = canvas.height = window.innerHeight;
 
+const collisions = document.getElementById('collisionCounter');
+
+// set counter variable
+let counter = 0;
+
+
 // function to generate random number
 
 function random(min, max) {
@@ -39,26 +45,33 @@ Ball.prototype.update = function() {
     }
 
     if ((this.y + this.size) >= height) {
-        this.velY = -(this.velY);
+        //this.velY = -(this.velY);
+        this.y = 0 + this.size;
     }
 
-    if ((this.y - this.size) <= 0) {
-        this.velY = -(this.velY);
+    if ((this.y + this.size) <= 0) {
+        //this.velY = -(this.velY);
+        this.y = height - this.size
     }
 
     this.x += this.velX;
     this.y += this.velY;
+
+    document.getElementById('collisionCounter').innerHTML = counter;
 }
 
 Ball.prototype.collisionDetect = function() {
-  for (let j = 0; j < balls.length; j++) {
-    if (!(this === balls[j])) {
-      const dx = this.x - balls[j].x;
-      const dy = this.y - balls[j].y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+    for (let j = 0; j < balls.length; j++) {
+      if (!(this === balls[j])) {
+        const dx = this.x - balls[j].x;
+        const dy = this.y - balls[j].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+  
+        if (distance < this.size + balls[j].size) {
+          balls[j].color = this.color = 'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')';
+        balls[j].size = random(50, 20);
+        counter++
 
-      if (distance < this.size + balls[j].size) {
-        balls[j].color = this.color = 'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')';
       }
     }
   }
@@ -66,7 +79,7 @@ Ball.prototype.collisionDetect = function() {
 
 let balls = [];
 
-while (balls.length < 25) {
+while (balls.length < 5) {
     let size = random(10, 20);
     let ball = new Ball(
         random(0 + size, width - size),
@@ -81,7 +94,7 @@ while (balls.length < 25) {
 }
 
 function loop() {
-    ctx.fillStyle = 'rgb(0, 0, 0, 0.25)';
+    ctx.fillStyle = 'rgb(0, 0, 0, 0.75)';
     ctx.fillRect(0, 0, width, height);
 
     for (let i = 0; i < balls.length; i++) {
@@ -92,5 +105,6 @@ function loop() {
 
     requestAnimationFrame(loop);
 }
+
 
 loop();
